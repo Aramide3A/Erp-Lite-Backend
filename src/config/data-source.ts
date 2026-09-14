@@ -11,8 +11,19 @@ import { Payment } from "../modules/payments/payment.entity";
 import { ErpRequest } from "../modules/requests/request.entity";
 import { RequestItem } from "../modules/requests/request-item.entity";
 import { Vendor } from "../modules/vendors/vendor.entity";
+import { Permission } from "../modules/auth/permission.entity";
+import { Role } from "../modules/auth/role.entity";
+import { User } from "../modules/auth/user.entity";
 
-import { Asset, Budget, CapitalContribution, Liability, RecurringExpense, SalaryRecord, WorkspaceSettings } from "../modules/workspace/workspace.entity";
+import {
+  Asset,
+  Budget,
+  CapitalContribution,
+  Liability,
+  RecurringExpense,
+  SalaryRecord,
+  WorkspaceSettings,
+} from "../modules/workspace/workspace.entity";
 
 export const AppDataSource = new DataSource({
   type: "postgres",
@@ -25,7 +36,16 @@ export const AppDataSource = new DataSource({
   synchronize: env.database.synchronize,
   logging: env.nodeEnv === "development" ? ["error", "warn"] : ["error"],
   entities: [
-    WorkspaceSettings, Asset, Budget, CapitalContribution, Liability, RecurringExpense, SalaryRecord,
+    WorkspaceSettings,
+    Asset,
+    Budget,
+    CapitalContribution,
+    Liability,
+    RecurringExpense,
+    SalaryRecord,
+    Permission,
+    Role,
+    User,
     Account,
     AuditLog,
     Employee,

@@ -25,6 +25,10 @@ const envSchema = z.object({
   DB_DATABASE: z.string().default("erp_lite"),
   DB_SSL: booleanFromEnv.default(false),
   DB_SYNCHRONIZE: booleanFromEnv.default(false),
+  JWT_SECRET: z.string().optional(),
+  SESSION_TTL: z.string().default("8h"),
+  ADMIN_EMAIL: z.string().email().optional(),
+  ADMIN_PASSWORD: z.string().optional(),
 });
 
 const parsedEnv = envSchema.safeParse(process.env);
@@ -34,6 +38,14 @@ if (!parsedEnv.success) {
 }
 
 const values = parsedEnv.data;
+
+if (values.NODE_ENV === "production" && !values.JWT_SECRET) {
+  throw new Error("JWT_SECRET must be set in production.");
+}
+
+if (values.NODE_ENV === "production" && !values.ADMIN_PASSWORD) {
+  throw new Error("ADMIN_PASSWORD must be set in production.");
+}
 
 export const env = {
   nodeEnv: values.NODE_ENV,
@@ -48,5 +60,13 @@ export const env = {
     database: values.DB_DATABASE,
     ssl: values.DB_SSL,
     synchronize: values.DB_SYNCHRONIZE && values.NODE_ENV !== "production",
+  },
+  auth: {
+    jwtSecret:
+      values.JWT_SECRET ?? "local-only-erp-lite-development-secret-change-before-production",
+    sessionTtl: values.SESSION_TTL,
+    sessionCookieMaxAgeMs: 8 * 60 * 60 * 1000,
+    adminEmail: values.ADMIN_EMAIL ?? "admin@erp-lite.local",
+    adminPassword: values.ADMIN_PASSWORD ?? "ChangeMe123!",
   },
 };

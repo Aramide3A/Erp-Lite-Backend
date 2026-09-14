@@ -1,6 +1,7 @@
 import { Router } from "express";
 import { z } from "zod";
 import { validate } from "../../common/middleware/validate";
+import { requirePermission } from "../auth/auth.middleware";
 import { auditLogController } from "./audit-log.controller";
 import { createAuditLogSchema } from "./audit-log.schemas";
 
@@ -11,4 +12,9 @@ const auditLogQuerySchema = z.object({
 export const auditLogRouter = Router();
 
 auditLogRouter.get("/", validate({ query: auditLogQuerySchema }), auditLogController.list);
-auditLogRouter.post("/", validate({ body: createAuditLogSchema }), auditLogController.create);
+auditLogRouter.post(
+  "/",
+  requirePermission("audit-log", "create"),
+  validate({ body: createAuditLogSchema }),
+  auditLogController.create,
+);
